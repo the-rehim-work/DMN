@@ -894,6 +894,8 @@ function DominoGame({
 
   const prevIsMyTurn = useRef(isMyTurn);
   const prevStatus = useRef(game.status);
+  const prevBoardLength = useRef(game.board.length);
+  const prevBoneyardCount = useRef(game.boneyardCount);
 
   const refreshGame = useCallback(async () => {
     try {
@@ -937,6 +939,31 @@ function DominoGame({
     }
     prevStatus.current = game.status;
   }, [game.status, game.allHands, playSound]);
+
+  useEffect(() => {
+    if (game.board.length > prevBoardLength.current && game.board.length > 0) {
+      const lastTile = game.board[game.board.length - 1];
+      const isDouble = lastTile.left === lastTile.right;
+
+      if (isDouble) {
+        const soundFile = `/sounds/double_${lastTile.left}.mp3`;
+        playSound('double_play', { file: soundFile, volume: 0.5 });
+      } else {
+        playSound('tile_play');
+      }
+    }
+    prevBoardLength.current = game.board.length;
+  }, [game.board, playSound]);
+
+  useEffect(() => {
+    const boneyardDecreased = game.boneyardCount < prevBoneyardCount.current;
+    const boardSame = game.board.length === prevBoardLength.current;
+
+    if (boneyardDecreased && boardSame && game.status === 'active') {
+      playSound('tile_draw');
+    }
+    prevBoneyardCount.current = game.boneyardCount;
+  }, [game.boneyardCount, game.board.length, game.status, playSound]);
 
   const getRelativePosition = useCallback((targetPosition: number): 'bottom' | 'left' | 'top' | 'right' => {
     if (myPosition === null) return 'bottom';
@@ -1029,34 +1056,9 @@ function DominoGame({
       });
 
       if (res.ok) {
-        const isDouble = selectedTile.left === selectedTile.right;
-        if (isDouble) {
-          switch (selectedTile.left) {
-            case 0: playSound('special_play', { file: '/sounds/double_0.mp3', volume: 0.5 });
-              break;
-            case 1: playSound('special_play', { file: '/sounds/double_1.mp3', volume: 0.5 });
-              break;
-            case 2: playSound('special_play', { file: '/sounds/double_2.mp3', volume: 0.5 });
-              break;
-            case 3: playSound('special_play', { file: '/sounds/double_3.mp3', volume: 0.5 });
-              break;
-            case 4: playSound('special_play', { file: '/sounds/double_4.mp3', volume: 0.5 });
-              break;
-            case 5: playSound('special_play', { file: '/sounds/double_5.mp3', volume: 0.5 });
-              break;
-            case 6: playSound('special_play', { file: '/sounds/double_6.mp3', volume: 0.5 });
-          }
-        }
-        else {
-          playSound('tile_play');
-        }
-
         setSelectedTile(null);
         setNewlyDrawnTiles([]);
         await refreshGame();
-      } else {
-        const data = await res.json();
-        setError(data.message || 'Failed to play tile');
       }
     } catch {
       setError('Network error');
@@ -1082,12 +1084,12 @@ function DominoGame({
         if (data.passed) {
           setNewlyDrawnTiles([]);
         } else if (data.drawnTiles && data.drawnTiles.length > 0) {
-          playSound('tile_draw');
           const drawn = data.drawnTiles.map((t: number[]) => ({ left: t[0], right: t[1] }));
           setNewlyDrawnTiles(drawn);
         }
         await refreshGame();
-      } else {
+      }
+      else {
         const data = await res.json();
         setError(data.message || 'Failed to draw/pass');
       }
@@ -1167,23 +1169,6 @@ function DominoGame({
               className="px-3 py-1.5 bg-red-700 hover:bg-red-600 text-white rounded-lg text-sm transition"
             >
               Leave
-            </button>
-          )}
-
-          {(game.status === 'active' || game.status === 'round_end') && (
-            <button
-              onClick={async () => {
-                if (confirm('Leave game? This will end the game for everyone.')) {
-                  await fetch(`${API_BASE}/games/${game.id}/leave`, {
-                    method: 'POST',
-                    headers: { Authorization: `Bearer ${token}` },
-                  });
-                  onBack();
-                }
-              }}
-              className="px-3 py-1.5 bg-red-700 hover:bg-red-600 text-white rounded-lg text-sm transition"
-            >
-              Abandon
             </button>
           )}
 

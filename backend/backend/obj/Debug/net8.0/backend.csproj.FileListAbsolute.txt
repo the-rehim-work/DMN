@@ -175,3 +175,5 @@ C:\Users\samid.sixaliyev\source\repos\DMN\backend\backend\obj\Debug\net8.0\backe
 C:\Users\samid.sixaliyev\source\repos\DMN\backend\backend\obj\Debug\net8.0\backend.genruntimeconfig.cache
 C:\Users\samid.sixaliyev\source\repos\DMN\backend\backend\obj\Debug\net8.0\ref\backend.dll
 C:\Users\samid.sixaliyev\source\repos\DMN\backend\backend\obj\Debug\net8.0\backend.sourcelink.json
+C:\Users\samid.sixaliyev\source\repos\DMN\backend\backend\obj\Debug\net8.0\swae.build.ex.cache
+C:\Users\samid.sixaliyev\source\repos\DMN\backend\backend\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

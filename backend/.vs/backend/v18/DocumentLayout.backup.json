@@ -1,0 +1,45 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\samid.sixaliyev\\source\\repos\\DMN\\backend\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{416B6230-DAF1-4F74-A37B-19DCEE679DA8}|backend\\backend.csproj|c:\\users\\samid.sixaliyev\\source\\repos\\dmn\\backend\\backend\\controllers\\gamescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{416B6230-DAF1-4F74-A37B-19DCEE679DA8}|backend\\backend.csproj|solutionrelative:backend\\controllers\\gamescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "GamesController.cs",
+              "DocumentMoniker": "C:\\Users\\samid.sixaliyev\\source\\repos\\DMN\\backend\\backend\\Controllers\\GamesController.cs",
+              "RelativeDocumentMoniker": "backend\\Controllers\\GamesController.cs",
+              "ToolTip": "C:\\Users\\samid.sixaliyev\\source\\repos\\DMN\\backend\\backend\\Controllers\\GamesController.cs",
+              "RelativeToolTip": "backend\\Controllers\\GamesController.cs",
+              "ViewState": "AgIAAA4CAAAAAAAAAAAkwBkCAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-05T14:17:52.755Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

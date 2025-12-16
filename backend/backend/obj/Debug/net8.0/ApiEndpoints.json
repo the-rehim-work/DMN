@@ -1,6 +1,38 @@
 [
   {
     "ContainingType": "backend.Controllers.AuthController",
+    "Method": "ChangePassword",
+    "RelativePath": "api/auth/change-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "backend.Controllers.AuthController\u002BChangePasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.AuthController",
+    "Method": "CheckEmail",
+    "RelativePath": "api/auth/emails/check",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "email",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.AuthController",
     "Method": "Login",
     "RelativePath": "api/auth/login",
     "HttpMethod": "POST",
@@ -17,12 +49,38 @@
   },
   {
     "ContainingType": "backend.Controllers.AuthController",
+    "Method": "Logout",
+    "RelativePath": "api/auth/logout",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.AuthController",
     "Method": "Me",
     "RelativePath": "api/auth/me",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.AuthController",
+    "Method": "UpdateProfile",
+    "RelativePath": "api/auth/profile",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "backend.Controllers.AuthController\u002BUpdateProfileDto",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {
@@ -160,11 +218,6 @@
         "IsRequired": false
       },
       {
-        "Name": "mode",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
         "Name": "q",
         "Type": "System.String",
         "IsRequired": false
@@ -206,7 +259,7 @@
   },
   {
     "ContainingType": "backend.Controllers.GamesController",
-    "Method": "DrawTile",
+    "Method": "DrawTiles",
     "RelativePath": "api/games/{id}/draw",
     "HttpMethod": "POST",
     "IsController": true,
@@ -259,22 +312,6 @@
   },
   {
     "ContainingType": "backend.Controllers.GamesController",
-    "Method": "Pass",
-    "RelativePath": "api/games/{id}/pass",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "backend.Controllers.GamesController",
     "Method": "PlayTile",
     "RelativePath": "api/games/{id}/play",
     "HttpMethod": "POST",
@@ -296,8 +333,40 @@
   },
   {
     "ContainingType": "backend.Controllers.GamesController",
-    "Method": "StartGame",
-    "RelativePath": "api/games/{id}/start",
+    "Method": "StartRound",
+    "RelativePath": "api/games/{id}/start-round",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.GamesController",
+    "Method": "VoteToEnd",
+    "RelativePath": "api/games/{id}/vote-end",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.GamesController",
+    "Method": "VoteToStart",
+    "RelativePath": "api/games/{id}/vote-start",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -321,6 +390,197 @@
       {
         "Name": "code",
         "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.TelephoneGamesController",
+    "Method": "CreateGame",
+    "RelativePath": "api/telephone/games",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "backend.Controllers.TelephoneGamesController\u002BCreateTelephoneGameDto",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.TelephoneGamesController",
+    "Method": "GetGames",
+    "RelativePath": "api/telephone/games",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "onlyMine",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.TelephoneGamesController",
+    "Method": "GetGame",
+    "RelativePath": "api/telephone/games/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.TelephoneGamesController",
+    "Method": "DrawTiles",
+    "RelativePath": "api/telephone/games/{id}/draw",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.TelephoneGamesController",
+    "Method": "JoinGame",
+    "RelativePath": "api/telephone/games/{id}/join",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.TelephoneGamesController",
+    "Method": "LeaveGame",
+    "RelativePath": "api/telephone/games/{id}/leave",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.TelephoneGamesController",
+    "Method": "PlayTile",
+    "RelativePath": "api/telephone/games/{id}/play",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "backend.Controllers.TelephoneGamesController\u002BTelephonePlayDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.TelephoneGamesController",
+    "Method": "PlayCombo",
+    "RelativePath": "api/telephone/games/{id}/play-combo",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "backend.Controllers.TelephoneGamesController\u002BTelephoneComboDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.TelephoneGamesController",
+    "Method": "StartRound",
+    "RelativePath": "api/telephone/games/{id}/start-round",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.TelephoneGamesController",
+    "Method": "VoteToEnd",
+    "RelativePath": "api/telephone/games/{id}/vote-end",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "backend.Controllers.TelephoneGamesController",
+    "Method": "VoteToStart",
+    "RelativePath": "api/telephone/games/{id}/vote-start",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
         "IsRequired": true
       }
     ],

@@ -72,6 +72,8 @@ namespace backend.Data
         public string? VotesToEndJson { get; set; }
 
         public bool IsAnonymous { get; set; }
+
+        public string? TelephoneBoardJson { get; set; }
     }
 
     public sealed class GameParticipant
@@ -253,6 +255,7 @@ namespace backend.Data
                 e.Property(x => x.BoneyardJson).HasColumnType("nvarchar(max)");
                 e.Property(x => x.RoundHistoryJson).HasColumnType("nvarchar(max)");
                 e.Property(x => x.VotesJson).HasColumnType("nvarchar(max)");
+                e.Property(x => x.TelephoneBoardJson).HasColumnType("nvarchar(max)");
             });
 
             b.Entity<GameParticipant>(e =>

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { X, RotateCcw, Users, Trophy, Layers, Volume2, VolumeX } from 'lucide-react';
 import * as GL from './gameLogic';
 import { useSound } from './hooks/useSound';
+import TelephoneGameComponent, { type TelephoneGame } from './TelephoneGame';
 
 interface User {
   id: string;
@@ -467,6 +468,7 @@ function Lobby({
   const [newGameTeam, setNewGameTeam] = useState(false);
   const [newGameMax, setNewGameMax] = useState(4);
   const [newGameAnonymous, setNewGameAnonymous] = useState(false);
+  const [newGameMode, setNewGameMode] = useState<'mode101' | 'telephone'>('mode101');
 
   const fetchGames = useCallback(async () => {
     try {
@@ -496,10 +498,13 @@ function Lobby({
   }, [fetchGames]);
 
   const createGame = async () => {
-
     setCreating(true);
     try {
-      const res = await fetch(`${API_BASE}/games`, {
+      const endpoint = newGameMode === 'telephone'
+        ? 'http://172.22.111.136:8000/api/telephone/games'
+        : `${API_BASE}/games`;
+
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -508,14 +513,14 @@ function Lobby({
         body: JSON.stringify({
           maxPlayers: newGameMax,
           minPlayers: 2,
-          isTeamGame: newGameTeam,
+          isTeamGame: newGameMode === 'mode101' ? newGameTeam : false,
           isAnonymous: newGameAnonymous,
         }),
       });
 
       if (res.ok) {
         const game = await res.json();
-        await joinGame(game.id);
+        await joinGame(game.id, newGameMode);
       }
     } catch {
       console.error('Failed to create game');
@@ -525,15 +530,19 @@ function Lobby({
     }
   };
 
-  const joinGame = async (gameId: string) => {
+  const joinGame = async (gameId: string, mode?: string) => {
     try {
-      const res = await fetch(`${API_BASE}/games/${gameId}/join`, {
+      const baseUrl = mode === 'telephone'
+        ? 'http://172.22.111.136:8000/api/telephone'
+        : API_BASE;
+
+      const res = await fetch(`${baseUrl}/games/${gameId}/join`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (res.ok) {
-        const fullRes = await fetch(`${API_BASE}/games/${gameId}`, {
+        const fullRes = await fetch(`${baseUrl}/games/${gameId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (fullRes.ok) {
@@ -543,6 +552,24 @@ function Lobby({
       }
     } catch {
       console.error('Failed to join game');
+    }
+  };
+
+  const openGame = async (gameId: string, mode?: string) => {
+    try {
+      const baseUrl = mode === 'telephone'
+        ? 'http://172.22.111.136:8000/api/telephone'
+        : API_BASE;
+
+      const res = await fetch(`${baseUrl}/games/${gameId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const game = await res.json();
+        onGameSelect(game);
+      }
+    } catch {
+      console.error('Failed to open game');
     }
   };
 
@@ -558,20 +585,6 @@ function Lobby({
       }
     } catch {
       console.error('Game not found');
-    }
-  };
-
-  const openGame = async (gameId: string) => {
-    try {
-      const res = await fetch(`${API_BASE}/games/${gameId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const game = await res.json();
-        onGameSelect(game);
-      }
-    } catch {
-      console.error('Failed to open game');
     }
   };
 
@@ -716,6 +729,9 @@ function Lobby({
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
                         <span className="text-white font-bold text-lg">{g.code}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded ${g.mode === 'telephone' ? 'bg-purple-600 text-white' : 'bg-cyan-600 text-white'}`}>
+                          {g.mode === 'telephone' ? 'TEL' : '101'}
+                        </span>
                         <span className={`text-sm ${statusColors[g.status] || 'text-slate-400'}`}>
                           {g.status}
                         </span>
@@ -745,7 +761,7 @@ function Lobby({
                       )}
                     </div>
                     <button
-                      onClick={() => iAmIn ? openGame(g.id) : joinGame(g.id)}
+                      onClick={() => iAmIn ? openGame(g.id, g.mode) : joinGame(g.id, g.mode)}
                       className={`px-5 py-2 text-white font-medium rounded-lg transition ${buttonClass}`}
                     >
                       {actionLabel}
@@ -765,6 +781,27 @@ function Lobby({
 
             <div className="space-y-4">
               <div>
+                <label className="block text-slate-300 text-sm mb-2">Game Mode</label>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => { setNewGameMode('mode101'); setNewGameTeam(false); }}
+                    className={`flex-1 py-2 rounded-lg font-medium transition ${newGameMode === 'mode101' ? 'bg-cyan-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+                  >
+                    Mode101
+                  </button>
+                  <button
+                    onClick={() => { setNewGameMode('telephone'); setNewGameTeam(false); }}
+                    className={`flex-1 py-2 rounded-lg font-medium transition ${newGameMode === 'telephone' ? 'bg-purple-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+                  >
+                    Telephone
+                  </button>
+                </div>
+                <p className="text-xs text-slate-500 mt-1">
+                  {newGameMode === 'mode101' ? 'Classic Azerbaijani dominoes - first to 101' : 'Score points when board sum % 5 = 0 - first to 365'}
+                </p>
+              </div>
+
+              <div>
                 <label className="block text-slate-300 text-sm mb-2">Max Players</label>
                 <div className="flex gap-2">
                   {[2, 3, 4].map((n) => (
@@ -779,38 +816,32 @@ function Lobby({
                 </div>
               </div>
 
+              {newGameMode === 'mode101' && (
+                <div>
+                  <label className="flex items-center gap-3 text-slate-300">
+                    <input
+                      type="checkbox"
+                      checked={newGameTeam}
+                      onChange={(e) => setNewGameTeam(e.target.checked)}
+                      disabled={newGameMax !== 4}
+                      className="accent-cyan-500 w-5 h-5"
+                    />
+                    Team Game (4 players only)
+                  </label>
+                </div>
+              )}
+
               <div>
                 <label className="flex items-center gap-3 text-slate-300">
                   <input
                     type="checkbox"
-                    checked={newGameTeam}
-                    onChange={(e) => setNewGameTeam(e.target.checked)}
-                    disabled={newGameMax !== 4}
+                    checked={newGameAnonymous}
+                    onChange={(e) => setNewGameAnonymous(e.target.checked)}
                     className="accent-cyan-500 w-5 h-5"
                   />
-                  Team Game (4 players only)
+                  Anonymous Mode
                 </label>
-                {newGameTeam && (
-                  <p className="text-xs text-slate-500 mt-1 ml-8">
-                    Teams: Position 0+2 vs 1+3
-                  </p>
-                )}
               </div>
-            </div>
-
-            <div>
-              <label className="flex items-center gap-3 text-slate-300">
-                <input
-                  type="checkbox"
-                  checked={newGameAnonymous}
-                  onChange={(e) => setNewGameAnonymous(e.target.checked)}
-                  className="accent-cyan-500 w-5 h-5"
-                />
-                Anonymous Mode
-              </label>
-              <p className="text-xs text-slate-500 mt-1 ml-8">
-                Names hidden until game ends
-              </p>
             </div>
 
             <div className="flex gap-3 mt-6">
@@ -823,7 +854,7 @@ function Lobby({
               <button
                 onClick={createGame}
                 disabled={creating}
-                className="flex-1 py-2.5 bg-cyan-600 hover:bg-cyan-500 disabled:bg-cyan-800 text-white font-semibold rounded-lg transition"
+                className={`flex-1 py-2.5 ${newGameMode === 'telephone' ? 'bg-purple-600 hover:bg-purple-500' : 'bg-cyan-600 hover:bg-cyan-500'} disabled:opacity-50 text-white font-semibold rounded-lg transition`}
               >
                 {creating ? 'Creating...' : 'Create'}
               </button>
@@ -1155,7 +1186,7 @@ function DominoGame({
             {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
           </button>
 
-          {(game.status === 'waiting' || game.status === 'voting') && !myParticipant?.hasVotedToStart && (
+          {(game.status === 'waiting' || game.status === 'voting') && (
             <button
               onClick={async () => {
                 if (confirm('Leave this game?')) {
@@ -1514,7 +1545,7 @@ export default function App() {
     const stored = localStorage.getItem('user');
     return stored ? JSON.parse(stored) : null;
   });
-  const [currentGame, setCurrentGame] = useState<ApiGame | null>(null);
+  const [currentGame, setCurrentGame] = useState<ApiGame | TelephoneGame | null>(null);
 
   const handleLogin = (newToken: string, newUser: User) => {
     setToken(newToken);
@@ -1536,11 +1567,22 @@ export default function App() {
   }
 
   if (currentGame) {
+    if (currentGame.mode === 'telephone') {
+      return (
+        <TelephoneGameComponent
+          token={token}
+          user={user}
+          initialGame={currentGame as TelephoneGame}
+          onBack={() => setCurrentGame(null)}
+        />
+      );
+    }
+
     return (
       <DominoGame
         token={token}
         user={user}
-        initialGame={currentGame}
+        initialGame={currentGame as ApiGame}
         onBack={() => setCurrentGame(null)}
       />
     );

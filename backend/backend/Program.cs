@@ -35,6 +35,7 @@ builder.Services
     .AddSignInManager();
 
 builder.Services.AddScoped<IMode101GameService, Mode101GameService>();
+builder.Services.AddScoped<ITelephoneGameService, TelephoneGameService>();
 
 builder.Services.AddAuthentication(options =>
 {

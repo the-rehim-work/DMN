@@ -296,7 +296,7 @@ namespace backend.Controllers
                 return Ok(new { g.Id, g.Code, role = "spectator", g.Status, message = "Game is full" });
 
             if (g.Status != "waiting")
-                return BadRequest(new { message = "Cannot join; game already started" });
+                return BadRequest(new { message = g.Status == "voting" ? "Cannot join; voting in progress" : "Cannot join; game already started" });
 
             if (g.IsTeamGame)
             {
@@ -952,7 +952,7 @@ namespace backend.Controllers
         public async Task<IActionResult> LeaveGame(Guid id)
         {
             var g = await _db.Games
-                .Include(x => x.Participants)
+                .Include(x => x.Participants).ThenInclude(p => p.User)
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (g is null) return NotFound();
 
@@ -962,23 +962,27 @@ namespace backend.Controllers
             var gp = g.Participants.FirstOrDefault(p => p.UserId == user.Id);
             if (gp is null) return BadRequest(new { message = "Not in this game" });
 
-            if (g.Status != "waiting" && g.Status != "voting")
-                return BadRequest(new { message = "Cannot leave after game started" });
+            if (g.Status == "finished")
+                return BadRequest(new { message = "Game already finished" });
 
-            if (gp.HasVotedToStart)
-                return BadRequest(new { message = "Cannot leave after voting to start" });
+            if (g.Status == "active" || g.Status == "round_end")
+                return BadRequest(new { message = "Cannot leave active game. Use Vote End instead." });
 
             _db.GameParticipants.Remove(gp);
 
             var remaining = g.Participants.Where(p => p.UserId != user.Id).OrderBy(p => p.Position).ToList();
             for (int i = 0; i < remaining.Count; i++)
+            {
                 remaining[i].Position = i;
+                remaining[i].Team = g.IsTeamGame ? (i % 2) + 1 : 0;
+                remaining[i].Color = _gameService.AssignColor(i);
+            }
 
             if (remaining.Count == 0)
             {
                 _db.Games.Remove(g);
             }
-            else if (g.Status == "voting")
+            else
             {
                 g.Status = "waiting";
                 foreach (var p in remaining)
@@ -991,10 +995,12 @@ namespace backend.Controllers
             {
                 type = "player_left",
                 playerId = user.Id,
-                playerName = user.DisplayName
+                playerName = user.DisplayName ?? user.UserName,
+                remainingCount = remaining.Count,
+                status = g.Status
             });
 
-            return Ok(new { left = true });
+            return Ok(new { left = true, gameDeleted = remaining.Count == 0 });
         }
 
         [HttpPost("games/{id:guid}/connect")]
